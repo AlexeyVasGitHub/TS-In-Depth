@@ -6,14 +6,36 @@ function showHello(divName: string, name: string) {
 }
 
 interface Book {
-  id: number,
-  title: string,
-  category: Category,
-  author: string,
-  available: boolean
+  id: number;
+  title: string;
+  category: Category;
+  author: string;
+  available: boolean;
+  pages?: number;
+  markDamaged?: DamageLogger;
 };
 
+interface DamageLogger {
+  (reason: string): void;
+}
+
+interface Person {
+  name: string;
+  email: string;
+}
+
+interface Author extends Person {
+  numBooksPublished: number;
+}
+
+interface Librarian extends Person {
+  department: string;
+  assistCustomer: (custName: string) => void;
+}
+
 type Books = ReadonlyArray<Book>;
+
+type BookProperties = keyof Book;
 
 enum Category { Javascript, CSS, HTML, Typescript, Angular };
 
@@ -155,6 +177,72 @@ function printBook(book: Book): void {
   console.log (`${book.title} by ${book.author}`);
 }
 
+function getBookProp(book: Book, prop: BookProperties): any {
+  if (typeof book[prop] === 'function'){
+    return book[prop][name];
+  } else {
+    return book[prop];
+  }
+}
+
+abstract class ReferenceItem {
+  // title: string;
+  // year: number;
+
+  // constructor(newTitle: string, newYear: number){
+  //   console.log(`Creating new Reference Item...`);
+  //   this.title = newTitle;
+  //   this.year = newYear;
+  // }
+
+  private _publisher: string;
+
+  static department: string = 'Research';
+
+  get publisher(): string {
+    return this._publisher.toUpperCase();
+  }
+
+  set publisher(newPublisher: string) {
+    this._publisher = newPublisher;
+  }
+
+  constructor(public title: string, protected year: number){
+    console.log(`Creating new Reference Item...`);
+  }
+
+  printItem(): void {
+    console.log(`${this.title} was published in ${this.year}`);
+    console.log(`Department: ${ReferenceItem.department}`);
+  }
+
+  abstract printCitation(): void;
+}
+
+class Encyclopedia extends ReferenceItem {
+  constructor(title: string, year: number, public edition: number){
+    super(title, year);
+  }
+
+  printItem(): void {
+    super.printItem();
+    console.log(`Edition: ${this.edition} ${this.year}`);
+  }
+
+  printCitation(): void {
+    console.log(`${this.title} - ${this.year}`);
+  }
+}
+
+class UnivercityLibrarian implements Librarian {
+  name: string;
+  email: string;
+  department: string;
+  assistCustomer (custName: string): void {
+    console.log(`${this.name} is assisting ${custName}`)
+  }
+}
+
 //===================================
 
 logFirstAvailabvle(getAllBooks());
@@ -207,7 +295,63 @@ const myBook = {
   available: true,
   category: Category.CSS,
   year: 2015,
-  copies: 3
+  copies: 3,
+  pages: 200,
+  markDamaged: (reason: string) => {console.log(`Damaged : ${reason}`)}
 }
 
 printBook(myBook);
+myBook.markDamaged('missing back cover');
+
+//=======================================
+
+const logDamage: DamageLogger = (reason: string) => {console.log(`Damaged : ${reason}`)}
+logDamage('missing cover');
+
+//=======================================
+
+const favoriteAuthor: Author = {
+  email: 'anna@example.com',
+  name: 'Anna',
+  numBooksPublished: 10
+}
+
+const favoriteLibrarian: Librarian = {
+  name: 'Boris',
+  email: 'boris@example.com',
+  department: 'Security',
+  assistCustomer: null
+}
+
+const offer: any = {
+  book: {
+    title: 'Essential Typescript'
+  }
+}
+console.log(offer?.book?.title);
+
+//=============================================
+
+console.log(getBookProp(getAllBooks()[0], 'title'));
+console.log(getBookProp(getAllBooks()[0], 'markDamaged'));
+
+//=============================================
+// const ref: ReferenceItem = new ReferenceItem('Facts and Figures', 2020);
+// ref.printItem();
+// ref.publisher = 'Press';
+// console.log(ref.publisher);
+
+//=============================================
+const refBook: Encyclopedia = new Encyclopedia('Super Title', 2020, 2);
+refBook.printItem();
+console.log(refBook);
+
+//=============================================
+const refBook2: Encyclopedia = new Encyclopedia('Super Title', 2020, 2);
+refBook2.printCitation();
+
+//=============================================
+const favoriteLibrarian2: Librarian = new UnivercityLibrarian();
+favoriteLibrarian2.name = 'Anna';
+console.log(favoriteLibrarian2);
+favoriteLibrarian2.assistCustomer('Boris');
