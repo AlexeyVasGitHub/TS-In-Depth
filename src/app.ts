@@ -1,7 +1,12 @@
 import { Category } from "./enums";
 import { UnivercityLibrarian, RefBook } from "./classes";
-import { showHello, logFirstAvailabvle, getBookAuthorByIndex, getAllBooks, calcTotalPages, getBookById, getBookTitlesByCategory, createCustomerId, createCustomer, checkoutBooks, getTitles, bookTitleTransform, printBook, getBookProp } from "./functions";
-import { Logger, Author, Librarian } from "./interfaces";
+import { showHello, logFirstAvailabvle, getBookAuthorByIndex, 
+  getAllBooks, calcTotalPages, getBookById, 
+  getBookTitlesByCategory, createCustomerId, 
+  createCustomer, checkoutBooks, getTitles, 
+  bookTitleTransform, printBook, getBookProp,
+  purge } from "./functions";
+import { Logger, Author, Librarian, Book } from "./interfaces";
 import { PersonBook } from "./types";
 
 showHello('greeting', 'TypeScript');
@@ -121,3 +126,33 @@ const personBook: PersonBook = {
   title: 'Unknown'
 }
 console.log(personBook)
+
+//=============================================
+const flag = true;
+if (flag) {
+  import('./classes').then(module => {
+    const reader = new module.Reader();
+    reader.name = 'Anna';
+    console.log(reader);
+  });
+}
+
+//=============================================
+const inventory: Array<Book> = 
+[
+  { id: 10, title: 'The C Programming Language', author: 'K & R', available: true, category: Category.Software },
+  { id: 11, title: 'Code Complete', author: 'Steve McConnell', available: true, category: Category.Software },
+  { id: 12, title: '8-Bit Graphics with Cobol', author: 'A. B.', available: true, category: Category.Software },
+  { id: 13, title: 'Cool autoexec.bat Scripts!', author: 'C. D.', available: true, category: Category.Software }
+];
+let res: number[] | Book[] = purge<Book>(inventory);
+console.log(res);
+res = purge([1, 2, 3, 4]);
+console.log(res);
+
+
+
+
+
+
+  
