@@ -1,36 +1,36 @@
 import { Category } from "./enums";
-import { UnivercityLibrarian, RefBook } from "./classes";
+import { UnivercityLibrarian, RefBook, Shelf } from "./classes";
 import { showHello, logFirstAvailabvle, getBookAuthorByIndex, 
   getAllBooks, calcTotalPages, getBookById, 
   getBookTitlesByCategory, createCustomerId, 
   createCustomer, checkoutBooks, getTitles, 
   bookTitleTransform, printBook, getBookProp,
   purge } from "./functions";
-import { Logger, Author, Librarian, Book } from "./interfaces";
-import { PersonBook } from "./types";
+import { Logger, Author, Librarian, Book, Magazine } from "./interfaces";
+import { PersonBook, BookRequiredFields, UpdatedBook, CreateCustomerFunctionType } from "./types";
 
 showHello('greeting', 'TypeScript');
 
-//===================================
+//=============================================
 logFirstAvailabvle(getAllBooks());
 //const result = getBookTitlesByCategory(Category.Javascript);
 //logBookTitles(result);
 console.log(getBookAuthorByIndex(2));
 console.log(calcTotalPages());
 
-//===================================
+//=============================================
 const result = getBookTitlesByCategory(Category.Javascript);
 result.forEach(title => console.log(title));
 console.log(getBookById(1));
 
-//===================================
+//=============================================
 const myId: string = createCustomerId('Ann', 10);
 console.log(myId);
 let idGenerator: (p1: string, p2: number) => string = (name: string, id: number) => `${id} - ${name}`;
 idGenerator = createCustomerId;
 console.log(idGenerator('Boris', 20));
 
-//===================================
+//=============================================
 createCustomer('Anna');
 createCustomer('Boris', 20);
 createCustomer('Clara', 20, 'Kyiv');
@@ -40,7 +40,7 @@ logFirstAvailabvle();
 const myBooks = checkoutBooks('Ann', 1, 2, 4);
 console.log(myBooks);
 
-//====================================
+//=============================================
 const checkedOutBooks = getTitles(false);
 console.log(checkedOutBooks);
 
@@ -49,7 +49,7 @@ console.log(s);
 const n = bookTitleTransform(10);
 console.log(n);
 
-//======================================
+//=============================================
 const myBook = {
   id: 5,
   title: 'Colors, Backgrounds and Gradients',
@@ -65,11 +65,11 @@ const myBook = {
 printBook(myBook);
 myBook.markDamaged('missing back cover');
 
-//=======================================
+//=============================================
 const logDamage: Logger = (reason: string) => { console.log(`Damaged : ${reason}`) }
 logDamage('missing cover');
 
-//=======================================
+//=============================================
 const favoriteAuthor: Author = {
   email: 'anna@example.com',
   name: 'Anna',
@@ -145,14 +145,60 @@ const inventory: Array<Book> =
   { id: 12, title: '8-Bit Graphics with Cobol', author: 'A. B.', available: true, category: Category.Software },
   { id: 13, title: 'Cool autoexec.bat Scripts!', author: 'C. D.', available: true, category: Category.Software }
 ];
-let res: number[] | Book[] = purge<Book>(inventory);
-console.log(res);
-res = purge([1, 2, 3, 4]);
-console.log(res);
+// let res: number[] | Book[] = purge<Book>(inventory);
+// console.log(res);
+// res = purge([1, 2, 3, 4]);
+// console.log(res);
 
+//=============================================
+const bookShelf: Shelf<Book> = new Shelf<Book>();
+inventory.forEach(book => bookShelf.add(book));
+console.log(bookShelf.getFirst());
 
+const magazines: Magazine[] = [
+  { title: 'Programming Language Monthly', publisher: 'Code Mags' },
+  { title: 'Literary Fiction Quarterly', publisher: 'College Press' },
+  { title: 'Five Points', publisher: 'GSU' }
+];
 
+const magazineShelf: Shelf<Magazine> = new Shelf();
+magazines.forEach(mag => magazineShelf.add(mag));
+console.log(magazineShelf.getFirst());
 
+//=============================================
+magazineShelf.printTitles();
+const mag = magazineShelf.find('Five Points');
+console.log(mag);
 
+//=============================================
+const book: BookRequiredFields = {
+  id: 1,
+  author: 'Anna',
+  available: false,
+  category: Category.Typescript,
+  markDamaged: null,
+  pages: 200,
+  title: 'Unknown'
+}
 
-  
+const updatedBook: UpdatedBook = {
+  id: 1
+};
+
+const params: Parameters<CreateCustomerFunctionType> = ['Anna'];
+createCustomer(...params);
+
+//=============================================
+const librarian = new UnivercityLibrarian();
+librarian.name = 'Anna';
+console.log(librarian);
+librarian['printLibrarian']();
+
+//=============================================
+const librarian2 = new UnivercityLibrarian();
+librarian2.assistFaculty = null;
+// librarian2.teachCommunity = null;
+
+//=============================================
+const enc = new RefBook('My title', 2020, 3);
+enc.printItem();
