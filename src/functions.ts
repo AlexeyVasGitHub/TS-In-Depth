@@ -1,6 +1,6 @@
 import { Category } from "./enums";
 import { Books, BookOrUndefined, BookProperties } from "./types";
-import { Book } from "./interfaces";
+import { Book, LibMgrCallback } from "./interfaces";
 
 export function showHello(divName: string, name: string) {
     const elt = document.getElementById(divName);
@@ -155,4 +155,50 @@ export function getBookProp(book: Book, prop: BookProperties): any {
 
 export function purge<T>(inventory: Array<T>): Array<T> {
     return inventory.slice(2);
+}
+
+export function getBooksByCategory(category: Category, callback: LibMgrCallback) {
+    setTimeout(() => {
+        try {
+            const titles: string[] = getBookTitlesByCategory(category);
+
+            if (titles.length > 0) {
+                callback(null, titles);
+            } else {
+                throw new Error('No Books Found');
+            }
+        }
+        catch (error) {
+            callback(error, null);
+        }
+    }, 2000);
+}
+
+export function logCategorySearch(err: Error, titles: string[]): void {
+    if (err) {
+        console.log(`Error message ${err.message}`);
+    } else {
+        console.log(titles);
+    }
+}
+
+
+export function getBooksByCategoryPromise(category: Category): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
+        setTimeout(() => {
+            const titles: string[] = getBookTitlesByCategory(category);
+
+            if (titles.length > 0) {
+                resolve(titles);
+            } else {
+                reject('No Books Found');
+            }
+        }, 2000);
+    });
+}
+
+
+export async function logSearchResults(category: Category) {
+    const titles: string[] = await getBooksByCategoryPromise(category);
+    console.log(titles);
 }

@@ -1,11 +1,12 @@
 import { Category } from "./enums";
 import { UnivercityLibrarian, RefBook, Shelf } from "./classes";
-import { showHello, logFirstAvailabvle, getBookAuthorByIndex, 
-  getAllBooks, calcTotalPages, getBookById, 
-  getBookTitlesByCategory, createCustomerId, 
-  createCustomer, checkoutBooks, getTitles, 
-  bookTitleTransform, printBook, getBookProp,
-  purge } from "./functions";
+import {
+  showHello, logFirstAvailabvle, getBookAuthorByIndex,
+  getAllBooks, calcTotalPages, getBookById,
+  getBookTitlesByCategory, createCustomerId,
+  createCustomer, checkoutBooks, getTitles,
+  bookTitleTransform, printBook, getBookProp, getBooksByCategory, logCategorySearch, getBooksByCategoryPromise, logSearchResults
+} from "./functions";
 import { Logger, Author, Librarian, Book, Magazine } from "./interfaces";
 import { PersonBook, BookRequiredFields, UpdatedBook, CreateCustomerFunctionType } from "./types";
 
@@ -46,8 +47,8 @@ console.log(checkedOutBooks);
 
 const s = bookTitleTransform('some string');
 console.log(s);
-const n = bookTitleTransform(10);
-console.log(n);
+// const n = bookTitleTransform(10);
+// console.log(n);
 
 //=============================================
 const myBook = {
@@ -138,13 +139,13 @@ if (flag) {
 }
 
 //=============================================
-const inventory: Array<Book> = 
-[
-  { id: 10, title: 'The C Programming Language', author: 'K & R', available: true, category: Category.Software },
-  { id: 11, title: 'Code Complete', author: 'Steve McConnell', available: true, category: Category.Software },
-  { id: 12, title: '8-Bit Graphics with Cobol', author: 'A. B.', available: true, category: Category.Software },
-  { id: 13, title: 'Cool autoexec.bat Scripts!', author: 'C. D.', available: true, category: Category.Software }
-];
+const inventory: Array<Book> =
+  [
+    { id: 10, title: 'The C Programming Language', author: 'K & R', available: true, category: Category.Software },
+    { id: 11, title: 'Code Complete', author: 'Steve McConnell', available: true, category: Category.Software },
+    { id: 12, title: '8-Bit Graphics with Cobol', author: 'A. B.', available: true, category: Category.Software },
+    { id: 13, title: 'Cool autoexec.bat Scripts!', author: 'C. D.', available: true, category: Category.Software }
+  ];
 // let res: number[] | Book[] = purge<Book>(inventory);
 // console.log(res);
 // res = purge([1, 2, 3, 4]);
@@ -202,3 +203,44 @@ librarian2.assistFaculty = null;
 //=============================================
 const enc = new RefBook('My title', 2020, 3);
 enc.printItem();
+
+//=============================================
+const librarian3 = new UnivercityLibrarian();
+librarian3.name = 'Anna';
+librarian3.assistCustomer('Boris');
+
+//=============================================
+const librarian4 = new UnivercityLibrarian();
+librarian4.name = 'Anna';
+librarian4.assistCustomer('Boris');
+
+//=============================================
+const enc2 = new RefBook('My title', 2020, 3);
+enc.copies = 10;
+
+//=============================================
+console.log('start');
+getBooksByCategory(Category.Javascript, logCategorySearch);
+getBooksByCategory(Category.Software, logCategorySearch);
+console.log('end');
+
+//=============================================
+console.log('start');
+getBooksByCategoryPromise(Category.Javascript)
+  .then(titles => {
+    console.log(titles);
+    return titles.length;
+  })
+  .then(numOfBooks => {
+    console.log(numOfBooks);
+  })
+  .catch(err => console.log(err))
+  .finally(() => console.log('completed'));
+getBooksByCategoryPromise(Category.Software);
+console.log('end');
+
+//=============================================
+console.log('start');
+logSearchResults(Category.Javascript);
+logSearchResults(Category.Software);
+console.log('end');
